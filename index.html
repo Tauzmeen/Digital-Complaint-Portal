@@ -1,22 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Digital Complaint Portal</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Complaint Portal | Gram Panchayat</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">GP</div>
+      <div><strong>Gram Panchayat</strong><span>Digital Complaint Portal</span></div>
+    </div>
+    <div class="top-actions">
+      <span class="secure-label">Citizen Services</span>
+      <button id="logoutBtn" class="btn btn-outline hidden">Log out</button>
+    </div>
+  </header>
 
-    <h1>Digital Complaint Portal</h1>
-    <p>Gram Panchayat Complaint Management System</p>
+  <main>
+    <section id="loginView" class="login-layout">
+      <div class="welcome-panel">
+        <span class="eyebrow">YOUR VOICE MATTERS</span>
+        <h1>A better village<br><em>starts with you.</em></h1>
+        <p>Report local issues, follow complaint progress, and help your Gram Panchayat build a cleaner, safer and better-connected community.</p>
+        <div class="welcome-points">
+          <span>✓ Easy complaint submission</span>
+          <span>✓ Track complaint status</span>
+          <span>✓ Transparent updates</span>
+        </div>
+      </div>
+      <div class="login-card">
+        <span class="eyebrow">WELCOME</span>
+        <h2>Sign in to continue</h2>
+        <p class="muted">Choose your account type and enter your details.</p>
+        <form id="loginForm">
+          <label for="role">Login as</label>
+          <select id="role" required>
+            <option value="citizen">Citizen</option>
+            <option value="admin">Administrator</option>
+          </select>
+          <label for="email">Email address</label>
+          <input id="email" type="email" placeholder="name@example.com" required>
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Enter password" required>
+          <button class="btn btn-primary full" type="submit">Sign in <span>→</span></button>
+          <p id="loginMessage" class="message" aria-live="polite"></p>
+        </form>
+        <div class="demo-note"><strong>Demo administrator:</strong> admin@gp.in / admin123<br><strong>Demo citizen:</strong> Any email and password (at least 4 characters).</div>
+      </div>
+    </section>
 
-    <form>
-        <input type="text" placeholder="Enter Your Name">
-        <input type="text" placeholder="Enter Complaint">
-        <button type="button" onclick="submitComplaint()">
-            Submit Complaint
-        </button>
-    </form>
+    <section id="citizenView" class="app-view hidden">
+      <div class="page-heading">
+        <div><span class="eyebrow">CITIZEN SERVICES</span><h1>Welcome, <span id="citizenName">Citizen</span></h1><p class="muted">Submit a new complaint or check the progress of your requests.</p></div>
+        <div class="heading-icon">✦</div>
+      </div>
+      <div class="stats-grid citizen-stats">
+        <article class="stat-card"><span class="stat-icon blue">＋</span><div><span class="stat-label">My complaints</span><strong id="myTotal">0</strong></div></article>
+        <article class="stat-card"><span class="stat-icon amber">◷</span><div><span class="stat-label">Pending</span><strong id="myPending">0</strong></div></article>
+        <article class="stat-card"><span class="stat-icon green">✓</span><div><span class="stat-label">Resolved</span><strong id="myResolved">0</strong></div></article>
+      </div>
+      <div class="content-grid">
+        <section class="panel">
+          <div class="panel-heading"><div><span class="eyebrow">NEW REQUEST</span><h2>Submit a complaint</h2></div><span class="step-number">01</span></div>
+          <form id="complaintForm" class="form-grid">
+            <div class="field"><label for="fullName">Full name</label><input id="fullName" required placeholder="Enter your full name"></div>
+            <div class="field"><label for="phone">Mobile number</label><input id="phone" type="tel" required pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"></div>
+            <div class="field"><label for="category">Complaint category</label><select id="category" required><option value="">Select category</option><option>Water Supply</option><option>Road Maintenance</option><option>Electricity</option><option>Sanitation & Waste</option><option>Street Lights</option><option>Drainage</option><option>Other</option></select></div>
+            <div class="field"><label for="location">Village / Ward / Location</label><input id="location" required placeholder="Enter your village or ward"></div>
+            <div class="field full-field"><label for="description">Complaint details</label><textarea id="description" rows="4" required minlength="10" placeholder="Describe the issue clearly..."></textarea></div>
+            <div class="full-field form-footer"><small>Please provide correct information so the concerned department can respond.</small><button class="btn btn-primary" type="submit">Submit complaint <span>→</span></button></div>
+          </form>
+          <p id="complaintMessage" class="message" aria-live="polite"></p>
+        </section>
+        <aside class="help-panel"><div class="help-symbol">?</div><h3>Need assistance?</h3><p>Provide a clear description and correct location. Your complaint will appear in your complaint history after submission.</p><div class="help-line"></div><span class="muted small">Keep your complaint ID for future reference.</span></aside>
+      </div>
+      <section class="panel table-panel">
+        <div class="panel-heading"><div><span class="eyebrow">ACTIVITY</span><h2>My complaint history</h2></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Complaint ID</th><th>Category</th><th>Location</th><th>Date</th><th>Status</th></tr></thead><tbody id="citizenRows"></tbody></table></div>
+        <p id="citizenEmpty" class="empty-state">You have not submitted any complaints yet.</p>
+      </section>
+    </section>
 
-    <script src="script.js"></script>
+    <section id="adminView" class="app-view hidden">
+      <div class="page-heading">
+        <div><span class="eyebrow">MANAGEMENT CONSOLE</span><h1>Admin dashboard</h1><p class="muted">Review citizen complaints and update their progress.</p></div>
+        <div class="admin-tag">Administrator</div>
+      </div>
+      <div class="stats-grid">
+        <article class="stat-card"><span class="stat-icon blue">▤</span><div><span class="stat-label">Total complaints</span><strong id="adminTotal">0</strong></div></article>
+        <article class="stat-card"><span class="stat-icon amber">◷</span><div><span class="stat-label">Pending</span><strong id="adminPending">0</strong></div></article>
+        <article class="stat-card"><span class="stat-icon purple">↻</span><div><span class="stat-label">In progress</span><strong id="adminProgress">0</strong></div></article>
+        <article class="stat-card"><span class="stat-icon green">✓</span><div><span class="stat-label">Resolved</span><strong id="adminResolved">0</strong></div></article>
+      </div>
+      <section class="panel table-panel">
+        <div class="panel-heading admin-table-heading"><div><span class="eyebrow">CITIZEN REQUESTS</span><h2>Manage complaints</h2></div><select id="statusFilter" class="filter-select"><option value="All">All statuses</option><option>Pending</option><option>In Progress</option><option>Resolved</option></select></div>
+        <div class="table-wrap"><table><thead><tr><th>ID / Citizen</th><th>Category</th><th>Location & details</th><th>Date</th><th>Update status</th></tr></thead><tbody id="adminRows"></tbody></table></div>
+        <p id="adminEmpty" class="empty-state">No complaints have been submitted yet.</p>
+      </section>
+    </section>
+  </main>
+  <footer><span>© 2026 Gram Panchayat Digital Complaint Portal</span><span>Serving the community with transparency</span></footer>
+  <script src="script.js"></script>
 </body>
 </html>
